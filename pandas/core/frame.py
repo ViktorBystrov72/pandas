@@ -16769,6 +16769,9 @@ class DataFrame(NDFrame, OpsMixin):
         Returns the covariance matrix of the DataFrame's time series.
         The covariance is normalized by N-ddof.
 
+        For each pair of columns, pandas uses the rows where both columns have
+        a value. It computes both means and the covariance using those same rows.
+
         For DataFrames that have Series that are missing data (assuming that
         data is `missing at random
         <https://en.wikipedia.org/wiki/Missing_data#Missing_at_random>`__)
@@ -16804,6 +16807,17 @@ class DataFrame(NDFrame, OpsMixin):
         c  0.059277 -0.008543  1.010670 -0.001486 -0.000271
         d -0.008943 -0.024738 -0.001486  0.921297 -0.013692
         e  0.014144  0.009826 -0.000271 -0.013692  0.977795
+
+        **Covariance with missing values**
+
+        The covariance between `a` and `b` uses the first two rows because
+        both columns have values in those rows:
+
+        >>> df = pd.DataFrame({"a": [0, 2, 40, np.nan], "b": [0, 2, np.nan, 100]})
+        >>> float(df.cov().loc["a", "b"])
+        2.0
+        >>> float(df.dropna().cov().loc["a", "b"])
+        2.0
 
         **Minimum number of periods**
 
